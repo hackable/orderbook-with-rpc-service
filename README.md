@@ -8,8 +8,8 @@ First, ensure you have [Node.js](https://nodejs.org/) and [npm](https://www.npmj
 
 **Clone the repository:**
 ```bash
-git clone [repository_url]
-cd [repository_directory]
+git clone https://github.com/hackable/orderbook-with-rpc-service
+cd https://github.com/hackable/orderbook-with-rpc-service
 ```
 
 Install the required packages:
@@ -18,8 +18,14 @@ npm install
 ```
 
 
-# boot two grape servers
+### Setting up the DHT
+
 ```bash
+npm i -g grenache-grape
+```
+
+```bash
+# boot two grape servers
 grape --dp 20001 --aph 30001 --bn '127.0.0.1:20002'
 grape --dp 20002 --aph 40001 --bn '127.0.0.1:20001'
 ```
