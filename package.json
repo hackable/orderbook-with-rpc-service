@@ -1,10 +1,10 @@
 {
-  "name": "micro-orderbook",
+  "name": "orderbook-with-rpc-service",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -15,8 +15,5 @@
   },
   "devDependencies": {
     "jest": "^29.7.0"
-  },
-  "scripts": {
-    "test": "jest"
   }
 }
