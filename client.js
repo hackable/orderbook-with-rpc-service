@@ -27,7 +27,7 @@ function randomOrder() {
     };
 }
 
-for (let i = 0; i < 100; i++) { // Simulates 100 requests
+for (let i = 0; i < 10; i++) { // Simulates 10 requests
     const payload = randomOrder();
 
     peer.request('rpc_test', payload, { timeout: 10000 }, (err, data) => {
