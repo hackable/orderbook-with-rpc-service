@@ -35,7 +35,7 @@ We utilize Jest for unit testing. To run the tests:
 ```bash
 npm test
 ```
-##Running the RPC Server
+## Running the RPC Server
 To initiate the RPC server, execute:
 ```bash
 node server.js
@@ -43,7 +43,7 @@ node server.js
 This action starts the server, allowing it to announce itself in the Grape Bittorrent network. The server then awaits incoming RPC requests to perform actions on the OrderBook.
 
 
-###Running the RPC Client
+## Running the RPC Client
 Once the server is operational, you can launch the RPC client:
 
 ``` bash
