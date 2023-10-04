@@ -1,7 +1,8 @@
-'use strict'
+'use strict';
 
 const { PeerRPCClient } = require('grenache-nodejs-http');
 const Link = require('grenache-nodejs-link');
+const OrderBook = require('./libs/orderbook'); // Assuming you have an orderbook library
 
 const link = new Link({
     grape: 'http://127.0.0.1:30001'
@@ -10,6 +11,31 @@ link.start();
 
 const peer = new PeerRPCClient(link, {});
 peer.init();
+
+const orderbook = new OrderBook();
+
+
+// Subscribing to updates
+peer.request('rpc_test', { action: 'subscribe' }, { timeout: 10000 }, (err, data) => {
+    if (err) {
+        console.error(err);
+    } else {
+        console.log(data);
+
+        // Simulates sending orders
+        for (let i = 0; i < 10; i++) {
+            const payload = randomOrder();
+            orderbook.addOrder(payload);
+            peer.request('rpc_test', payload, { timeout: 10000 }, (err, data) => {
+                if (err) {
+                    console.error(err);
+                } else {
+                    console.log(data);
+                }
+            });
+        }
+    }
+});
 
 function randomOrder() {
     const types = ['buy', 'sell'];
@@ -27,46 +53,33 @@ function randomOrder() {
     };
 }
 
-for (let i = 0; i < 10; i++) { // Simulates 10 requests
-    const payload = randomOrder();
 
-    peer.request('rpc_test', payload, { timeout: 10000 }, (err, data) => {
-        if (err) {
-            console.error(err);
-            process.exit(-1);
-        } else {
-            console.log(data);
-        }
-    });
+// Listen for updates
+peer.on('data', (data) => {
+    console.log('Update received:', data);
+    if (data && data.order) {
+        // Assuming addOrder is a method of your orderbook that adds an order
+        orderbook.addOrder(data.order);
+    }
+});
+
+
+// Get state for a specific asset
+function getState(asset) {
+    // Note: Ensure that your orderbook class has a method getState
+    const state = orderbook.getState(asset);
+    console.log(`State for ${asset}:`, state);
 }
 
+// Get state for all assets
+function getStateForAllAssets() {
+    // Note: Ensure that your orderbook class has a method getStateForAllAssets
+    const allStates = orderbook.getStateForAllAssets();
+    console.log("State for all assets:", allStates);
+}
 
-
-// Wait some time for the orders to be processed, then fetch state for each asset.
-setTimeout(() => {
-    const assets = ['BTC/USD', 'ETH/USD', 'LTC/USD'];
-    assets.forEach((asset) => {
-        peer.request('rpc_test', { action: 'getState', asset: asset }, { timeout: 10000 }, (err, data) => {
-            if (err) {
-                console.error(err);
-                process.exit(-1);
-            } else {
-                console.log(`State for ${asset}:`, JSON.stringify(data));
-            }
-        });
-    });
-}, 5000); // 5 seconds delay to allow order additions to complete
-
-
-
-// After fetching the state for each asset, fetch state for all assets.
-setTimeout(() => {
-    peer.request('rpc_test', { action: 'getStateForAllAssets' }, { timeout: 10000 }, (err, data) => {
-        if (err) {
-            console.error(err);
-            process.exit(-1);
-        } else {
-            console.log("State for all assets:", JSON.stringify(data));
-        }
-    });
-}, 5000); // 5 seconds delay to allow previous requests to complete.
+// Example usage:
+setInterval(() => {
+    getState('BTC/USD');  // Example asset
+    getStateForAllAssets();
+}, 5000);
